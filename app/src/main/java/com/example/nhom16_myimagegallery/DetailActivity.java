@@ -40,23 +40,18 @@ public class DetailActivity extends AppCompatActivity {
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
         imageView.setOnTouchListener((v, event) -> {
-            // Đếm số ngón tay
             int pointerCount = event.getPointerCount();
 
-            boolean handled = false;
-
-            // Kiểm tra nếu có đúng 2 ngón tay
-            if (pointerCount == 1) {
-                handled = gestureDetector.onTouchEvent(event);  // Chỉ xử lý vuốt với 2 ngón tay
+            if (pointerCount == 2) {
+                // Xử lý phóng to/thu nhỏ với 2 ngón tay
+                scaleGestureDetector.onTouchEvent(event);
+            } else if (pointerCount == 3) {
+                // Xử lý vuốt chuyển ảnh với 3 ngón tay
+                gestureDetector.onTouchEvent(event);
             }
 
-            // Xử lý phóng to/thu nhỏ
-            handled = scaleGestureDetector.onTouchEvent(event) || handled;
-
-            return handled;  // Trả về kết quả xử lý
+            return true;
         });
-
-
     }
 
     private void loadImage(int position) {
@@ -73,7 +68,6 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            // Không kiểm tra PointerCount ở đây vì không chính xác
             float diffX = e2.getX() - e1.getX();
 
             if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
@@ -102,7 +96,6 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            // Lấy tỷ lệ phóng to/thu nhỏ
             scaleFactor *= detector.getScaleFactor();
 
             // Giới hạn tỷ lệ để không quá nhỏ hoặc quá lớn
