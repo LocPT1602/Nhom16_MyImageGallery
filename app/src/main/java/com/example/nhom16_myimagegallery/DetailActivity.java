@@ -40,14 +40,13 @@ public class DetailActivity extends AppCompatActivity {
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
         imageView.setOnTouchListener((v, event) -> {
-            // Xử lý ScaleGestureDetector và GestureDetector
-            scaleGestureDetector.onTouchEvent(event);
+            // Xử lý GestureDetector và ScaleGestureDetector
+//            scaleGestureDetector.onTouchEvent(event);
 
-            // Kiểm tra nếu có 2 ngón tay trong sự kiện vuốt
-            if (event.getPointerCount() == 2) {
-                gestureDetector.onTouchEvent(event);
+            // Kiểm tra số lượng ngón tay khi vuốt
+            if (event.getPointerCount() == 3) {
+                return gestureDetector.onTouchEvent(event);
             }
-
             return true;
         });
     }
@@ -59,15 +58,15 @@ public class DetailActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
-    // Lớp GestureListener để xử lý vuốt qua lại với 2 ngón tay
+    // Lớp GestureListener để xử lý vuốt qua lại với 3 ngón tay
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            // Kiểm tra chỉ xử lý vuốt khi có 2 ngón tay
-            if (e1.getPointerCount() == 2 && e2.getPointerCount() == 2) {
+            // Chỉ xử lý khi có đúng 3 ngón tay
+            if (e1.getPointerCount() == 3 && e2.getPointerCount() == 3) {
                 float diffX = e2.getX() - e1.getX();
 
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
