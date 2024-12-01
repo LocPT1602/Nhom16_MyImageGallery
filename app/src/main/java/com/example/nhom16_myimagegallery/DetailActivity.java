@@ -1,12 +1,14 @@
 package com.example.nhom16_myimagegallery;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
+import androidx.core.view.MotionEventCompat;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class DetailActivity extends AppCompatActivity {
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
     private float scaleFactor = 1.f; // Kích thước ảnh mặc định
+    private static final String DEBUG_TAG = "DetailActivity"; // Thẻ log
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +43,33 @@ public class DetailActivity extends AppCompatActivity {
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
         imageView.setOnTouchListener((v, event) -> {
-            // Xử lý GestureDetector và ScaleGestureDetector
-            scaleGestureDetector.onTouchEvent(event);
+            // Lấy hành động từ sự kiện
+            int action = MotionEventCompat.getActionMasked(event);
+            // Lấy chỉ số ngón tay trong sự kiện
+            int index = MotionEventCompat.getActionIndex(event);
 
-            // Kiểm tra số lượng ngón tay khi vuốt
-            if (event.getPointerCount() == 2) {
-                return gestureDetector.onTouchEvent(event);  // Chỉ xử lý vuốt với 2 ngón tay
+            // Log thông tin sự kiện
+            Log.d(DEBUG_TAG, "The action is " + actionToString(action));
+
+            // Xử lý các sự kiện vuốt với nhiều ngón tay
+            if (event.getPointerCount() > 1) {
+                Log.d(DEBUG_TAG, "Multitouch event");
+
+                // Lấy vị trí của ngón tay
+                int xPos = (int) MotionEventCompat.getX(event, index);
+                int yPos = (int) MotionEventCompat.getY(event, index);
+
+                // Kiểm tra nếu số lượng ngón tay là 2 và xử lý vuốt
+                if (event.getPointerCount() == 2) {
+                    return gestureDetector.onTouchEvent(event);  // Vuốt với 2 ngón tay
+                }
+            } else {
+                // Single touch event
+                Log.d(DEBUG_TAG, "Single touch event");
+                int xPos = (int) MotionEventCompat.getX(event, index);
+                int yPos = (int) MotionEventCompat.getY(event, index);
             }
+
             return true;
         });
     }
@@ -107,5 +130,19 @@ public class DetailActivity extends AppCompatActivity {
 
             return true;
         }
+    }
+
+    // Hàm chuyển đổi action thành chuỗi
+    public static String actionToString(int action) {
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: return "Down";
+            case MotionEvent.ACTION_MOVE: return "Move";
+            case MotionEvent.ACTION_POINTER_DOWN: return "Pointer Down";
+            case MotionEvent.ACTION_UP: return "Up";
+            case MotionEvent.ACTION_POINTER_UP: return "Pointer Up";
+            case MotionEvent.ACTION_OUTSIDE: return "Outside";
+            case MotionEvent.ACTION_CANCEL: return "Cancel";
+        }
+        return "";
     }
 }
