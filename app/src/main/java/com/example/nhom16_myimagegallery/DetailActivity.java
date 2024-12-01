@@ -62,34 +62,46 @@ public class DetailActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
-    // Lớp GestureListener để xử lý vuốt qua lại với 2 ngón tay
+
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            float diffX = e2.getX() - e1.getX();
+            // Lấy số ngón tay chạm vào màn hình
+            int pointerCount = e1.getPointerCount();
 
-            if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                if (diffX > 0) {
-                    // Vuốt phải, chuyển về ảnh trước
-                    if (currentPosition > 0) {
-                        currentPosition--;
-                        loadImage(currentPosition);
+            if (pointerCount == 2) {
+                // Nếu có 2 ngón tay, xử lý vuốt (swipe)
+                float diffX = e2.getX() - e1.getX();
+
+                // Xử lý vuốt trái/phải
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        // Vuốt phải, chuyển về ảnh trước
+                        if (currentPosition > 0) {
+                            currentPosition--;
+                            loadImage(currentPosition);
+                        }
+                    } else {
+                        // Vuốt trái, chuyển đến ảnh sau
+                        if (currentPosition < imagePaths.size() - 1) {
+                            currentPosition++;
+                            loadImage(currentPosition);
+                        }
                     }
-                } else {
-                    // Vuốt trái, chuyển đến ảnh sau
-                    if (currentPosition < imagePaths.size() - 1) {
-                        currentPosition++;
-                        loadImage(currentPosition);
-                    }
+                    return true;
                 }
-                return true;
+            } else if (pointerCount == 3) {
+                // Nếu có 3 ngón tay, chuyển ảnh mà không xử lý vuốt (swipe)
+                // Bạn có thể thêm hành động chuyển ảnh ở đây, ví dụ như vuốt qua lại
+                return true; // Bỏ qua sự kiện vuốt để không thực hiện gì
             }
             return false;
         }
     }
+
 
 
     // Lớp ScaleListener để xử lý sự kiện phóng to/thu nhỏ với 2 ngón tay
