@@ -46,6 +46,7 @@ public class DetailActivity extends AppCompatActivity {
                 // Xử lý phóng to/thu nhỏ với 2 ngón tay
                 scaleGestureDetector.onTouchEvent(event);
             } else if (pointerCount == 3) {
+                System.out.println("ba ngón");
                 // Xử lý vuốt chuyển ảnh với 3 ngón tay
                 gestureDetector.onTouchEvent(event);
             }
