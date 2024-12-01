@@ -1,12 +1,11 @@
 package com.example.nhom16_myimagegallery;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
-import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
-
 import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
@@ -36,8 +35,11 @@ public class DetailActivity extends AppCompatActivity {
         imageView.setOnTouchListener((v, event) -> {
             // Kiểm tra có đúng 2 ngón tay không
             if (event.getPointerCount() == 2) {
+                Log.d("DetailActivity", "Vuốt với 2 ngón tay: " + event.getActionMasked());
                 // Chỉ xử lý vuốt khi có 2 ngón tay
                 gestureDetector.onTouchEvent(event);
+            } else {
+                Log.d("DetailActivity", "Không phải vuốt với 2 ngón tay, pointer count: " + event.getPointerCount());
             }
             return true;
         });
@@ -59,6 +61,7 @@ public class DetailActivity extends AppCompatActivity {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             // Kiểm tra chỉ xử lý vuốt khi có 2 ngón tay
             if (e1.getPointerCount() == 2 && e2.getPointerCount() == 2) {
+                Log.d("DetailActivity", "Vuốt qua lại với 2 ngón tay: " + (e2.getX() - e1.getX()));
                 float diffX = e2.getX() - e1.getX();
 
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
@@ -76,7 +79,11 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                     return true;
+                } else {
+                    Log.d("DetailActivity", "Không đủ độ dài để vuốt");
                 }
+            } else {
+                Log.d("DetailActivity", "Không phải 2 ngón tay vuốt, pointer count: " + e1.getPointerCount());
             }
             return false;
         }
