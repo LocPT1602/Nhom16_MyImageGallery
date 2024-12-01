@@ -18,6 +18,7 @@ public class DetailActivity extends AppCompatActivity {
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
     private float scaleFactor = 1.f; // Kích thước ảnh mặc định
+    private float lastX = 0, lastY = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +47,8 @@ public class DetailActivity extends AppCompatActivity {
                 // Xử lý phóng to/thu nhỏ với 2 ngón tay
                 scaleGestureDetector.onTouchEvent(event);
             } else if (pointerCount == 3) {
-                System.out.println("ba ngón");
-                // Xử lý vuốt chuyển ảnh với 3 ngón tay
-                gestureDetector.onTouchEvent(event);
+                // Xử lý kéo thả với 3 ngón tay
+                handleThreeFingerDrag(event);
             }
 
             return true;
@@ -62,6 +62,44 @@ public class DetailActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
+    private void handleThreeFingerDrag(MotionEvent event) {
+        int action = event.getActionMasked();
+        int pointerCount = event.getPointerCount();
+
+        if (pointerCount == 3) {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    // Lấy tọa độ của ngón tay đầu tiên
+                    int firstPointerIndex = event.getActionIndex();
+                    lastX = event.getX(firstPointerIndex);
+                    lastY = event.getY(firstPointerIndex);
+                    break;
+
+                case MotionEvent.ACTION_MOVE:
+                    // Nếu có 3 ngón tay, thực hiện kéo thả dựa trên ngón tay đầu tiên
+                    int movingPointerIndex = event.getActionIndex();
+                    float moveX = event.getX(movingPointerIndex);
+                    float moveY = event.getY(movingPointerIndex);
+
+                    // Tính toán sự thay đổi và di chuyển hình ảnh
+                    float deltaX = moveX - lastX;
+                    float deltaY = moveY - lastY;
+
+                    imageView.setTranslationX(imageView.getTranslationX() + deltaX);
+                    imageView.setTranslationY(imageView.getTranslationY() + deltaY);
+
+                    // Cập nhật tọa độ ngón tay đầu tiên
+                    lastX = moveX;
+                    lastY = moveY;
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                    break;
+            }
+        }
+    }
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_THRESHOLD = 100;
@@ -93,16 +131,10 @@ public class DetailActivity extends AppCompatActivity {
                     }
                     return true;
                 }
-            } else if (pointerCount == 3) {
-                // Nếu có 3 ngón tay, chuyển ảnh mà không xử lý vuốt (swipe)
-                // Bạn có thể thêm hành động chuyển ảnh ở đây, ví dụ như vuốt qua lại
-                return true; // Bỏ qua sự kiện vuốt để không thực hiện gì
             }
             return false;
         }
     }
-
-
 
     // Lớp ScaleListener để xử lý sự kiện phóng to/thu nhỏ với 2 ngón tay
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
