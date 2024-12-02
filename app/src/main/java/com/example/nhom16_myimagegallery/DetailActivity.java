@@ -26,7 +26,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        imageView = findViewById(R.id.viewPager);
+        imageView = findViewById(R.id.detailImageView);
 
         // Lấy dữ liệu từ Intent
         imagePaths = getIntent().getStringArrayListExtra("imagePaths");
